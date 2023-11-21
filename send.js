@@ -1,6 +1,6 @@
 const Net = require('net');
-//const dgram = require('dgram');
 
+// Example HEX codes to be sent to the screens. In this example, the DeviceID 01 has been defined.
 const status = [0xAA, 0x0D, 0x01, 0x00, 0x0E]
 var statushex = new Uint8Array(status);
 const panelonToSend = [0xAA, 0xF9, 0x01, 0x01, 0x01, 0xFC]
@@ -9,11 +9,16 @@ const paneloffToSend = [0xAA, 0xF9, 0x01, 0x01, 0x00, 0xFB]
 var paneloffhex = new Uint8Array(paneloffToSend);
 const ecoSensor = [0xAA, 0x50, 0x01, 0x01, 0x00, 0x52]
 var ecoSensorhex = new Uint8Array(ecoSensor);
-const host1 = '192.168.10.115'
-let onOrOff = 0;
 
+// Ip address of the screen
+const host1 = '192.168.10.115'
+
+let onOrOff = 0; //used to check the screen status
+
+//Calls the test every 2 seconds
 setInterval(()=> sendRj(host1, 1515, ecoSensorhex), 2000 )
 
+// Controls the screen Panel status
 function controlScreen(host, port, hex) {
     let nobj = new Net.Socket();
     console.log('controlling panel status...')
@@ -46,6 +51,7 @@ function controlScreen(host, port, hex) {
 
 }
 
+// Reads the value from the lightsensor and triggers the Panel on or Off command
 function sendRj(host, port, hex) {
     setTimeout(()=> {
         console.log('closing due to inactivity...')
@@ -107,17 +113,4 @@ function sendRj(host, port, hex) {
         }, 100);
     });
 }
-
-function sendUDP(host, port, command) {
-    const message = Buffer.from(command);
-    const socket = dgram.createSocket('udp4');
-    socket.send(message, 0, message.length, port, host, (err) => {
-        console.log(`Sent ${message} to ${host} - if Error then :`, err)
-        socket.close();
-    });
-}
-
-
-exports.sendRj = sendRj
-exports.sendUDP = sendUDP
 
